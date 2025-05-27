@@ -1,0 +1,11 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<%= message %>
+<div class="container mt-4">
+  <h1>問題<%= num %>のページ</h1>
+  <%- include( num) %>
+  <%- include('../partials/form_single') %>
+</div>
+
+<%- include('../partials/footer') %>
