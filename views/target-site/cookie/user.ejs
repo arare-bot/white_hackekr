@@ -1,0 +1,253 @@
+<%- include('../../partials/head') %>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root {
+  --main-bg: url('/images/main.png');         /* 中央に表示したい壁紙 */
+  --side-bg-1: url('/images/side-top.png');   /* 縦長時：上／横長時：左 */
+  --side-bg-2: url('/images/side-bottom.png');/* 縦長時：下／横長時：右 */
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  min-height: 100vh;
+  min-width: 100vw;
+  overflow: hidden;
+}
+body {
+  background: none;
+  font-family: 'Press Start 2P', 'monospace', sans-serif;
+}
+
+/* ==== 壁紙全体ラッパー ==== */
+.wallpaper-wrapper {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:
+    var(--side-bg-1) no-repeat top left,
+    var(--side-bg-2) no-repeat bottom right;
+  background-size: auto 100%, auto 100%;
+  transition: background 0.3s;
+}
+
+/* 中央メイン壁紙をアスペクト比維持でフィット */
+.wallpaper-main-img {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%,-50%);
+  max-width: 100vw;
+  max-height: 100vh;
+  min-width: 0;
+  min-height: 0;
+  width: auto;
+  height: auto;
+  z-index: 1;
+  object-fit: contain;
+  /* ぼかしやエフェクトを付ける場合はここで */
+}
+
+/* === 縦長の時は上下に壁紙 === */
+@media (max-aspect-ratio: 5/6) {
+  .wallpaper-wrapper {
+    background:
+      var(--side-bg-1) no-repeat top center,
+      var(--side-bg-2) no-repeat bottom center;
+    background-size: 100% auto, 100% auto;
+  }
+}
+
+/* === 横長の時は左右に壁紙 === */
+@media (min-aspect-ratio: 6/5) {
+  .wallpaper-wrapper {
+    background:
+      var(--side-bg-1) no-repeat left center,
+      var(--side-bg-2) no-repeat right center;
+    background-size: auto 100%, auto 100%;
+  }
+}
+
+/* ==== フロントUIは重ねてz-index:2 ==== */
+.main-content {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+}
+
+.left-panel {
+  position: relative;
+  min-height: 100vh;
+  width: 320px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.menu-box {
+  position: absolute;
+  top: 36px; left: 0;
+  width: 100%;
+  padding: 0 0 0 32px;
+  z-index: 3;
+  background:
+    <%= darkmode === 'true'
+      ? 'rgba(24,24,24,0.98)' 
+      : 'rgba(255,255,255,0.92)' %>;
+  color: <%= darkmode === 'true' ? '#fff' : '#222' %>;
+  border-radius: 0 18px 18px 0;
+  box-shadow: 2px 4px 18px #0006;
+}
+.logo-big {
+  font-size: 2.5em;
+  font-family: Impact, 'Arial Black', sans-serif;
+  text-align: left;
+  margin: 0.2em 0 1em 0;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  line-height: 1.1;
+  text-shadow: 2px 2px 12px #000, 0 2px 2px #fff;
+}
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.menu li {
+  font-size: 1em;
+  margin-bottom: 1em;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  color: inherit;
+  transition: color .2s;
+}
+.menu li:hover {
+  color: #00ffc8;
+  text-shadow: 0 0 5px #00ffc8;
+}
+.left-panel .footer {
+  position: absolute;
+  left: 16px;
+  bottom: 20px;
+  width: calc(100% - 32px);
+  text-align: left;
+  font-size: 0.9em;
+  opacity: 0.85;
+  z-index: 3;
+}
+.socials img {
+  width: 32px;
+  margin: 0 6px;
+}
+
+/* 右側のUI例（お好みでカスタム） */
+.right-panel {
+  position: relative;
+  flex: 1 1 0%;
+  min-height: 100vh;
+  background: transparent;
+}
+.news-window {
+  background: #dfc3ff;
+  border: 3px solid #7947c6;
+  border-radius: 12px;
+  color: #22194d;
+  padding: 1em;
+  box-shadow: 4px 4px 18px #8888;
+  min-width: 240px;
+  max-width: 80vw;
+  position: absolute;
+  left: 30vw;
+  top: 62vh;
+  font-family: 'Consolas', 'monospace', sans-serif;
+  font-size: 1em;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 900px) {
+  .main-content { flex-direction: column; }
+  .left-panel { width: 100vw; min-height: 30vh; }
+  .menu-box { width: 100vw; left: 0; padding-left: 10vw; }
+  .right-panel { min-height: 50vh; }
+  .news-window { left: 6vw; top: 55vh; min-width: 180px; font-size: 0.93em; }
+}
+@media (max-width: 600px) {
+  .logo-big { font-size: 1.15em; }
+  .news-window { left: 2vw; top: 66vh; min-width: 120px; font-size: 0.8em; }
+  .footer { font-size: 0.7em; }
+  .menu li { font-size: 0.89em; }
+}
+</style>
+</head>
+<body>
+  <!-- 壁紙全体のレイヤ -->
+  <div class="wallpaper-wrapper">
+    <img src="/images/main.png" class="wallpaper-main-img" alt="main wallpaper">
+    <!-- 上下 or 左右はCSS backgroundで -->
+  </div>
+
+  <div class="main-content">
+    <!-- 左メニューパネル -->
+    <div class="left-panel">
+      <div class="menu-box">
+        <div class="logo-big">ZUTOMAYO</div>
+        <ul class="menu">
+          <% 
+            const nav = {
+              jp: ['TOP','NEWS','LIVE','RELEASE','GAME','FONT','PHOTO','PROFILE','STORE','PREMIUM','REGIST','LOGIN','VOICE','CONTACT'],
+              en: ['TOP','NEWS','LIVE','RELEASE','GAME','FONT','PHOTO','PROFILE','STORE','PREMIUM','REGISTER','LOGIN','VOICE','CONTACT'],
+              cn: ['首页','新闻','演出','发布','游戏','字体','照片','简介','商店','会员','注册','登录','语音','联系']
+            };
+            (nav[country] || nav.jp).forEach(function(item) { %>
+              <li><%= item %></li>
+          <% }); %>
+        </ul>
+      </div>
+      <div class="footer">
+        <div class="socials mb-1">
+          <img src="/path/to/youtube.png" alt="YouTube">
+          <img src="/path/to/twitter.png" alt="X">
+          <img src="/path/to/instagram.png" alt="Instagram">
+          <img src="/path/to/tiktok.png" alt="TikTok">
+        </div>
+        <div>
+          <select>
+            <option <%= country==='jp' ? 'selected' : '' %> >日本語</option>
+            <option <%= country==='en' ? 'selected' : '' %> >English</option>
+            <option <%= country==='cn' ? 'selected' : '' %> >中文</option>
+          </select>
+        </div>
+        <div>
+          ALL RIGHTS RESERVED 2025©ZUTOMAYO
+        </div>
+      </div>
+    </div>
+    <!-- 右パネル例 -->
+    <div class="right-panel">
+      <div class="news-window" style="top:55vh; left:7vw;">
+        <b>
+          <%= country === 'jp' ? 'News 2025.06.24' : country === 'en' ? 'News Jun.24,2025' : '新闻 2025.06.24' %>
+        </b><br>
+        <%= country === 'jp'
+          ? '【6/25(水)20:00-】会員限定LIVE<br>「コズミックどろ団子…'
+          : country === 'en'
+          ? '[Wed 6/25 8PM] Members Only LIVE<br>“Cosmic Doro Dango...'
+          : '【6月25日(周三)20:00-】会员限定直播<br>“宇宙泥丸...”'
+        %><br>
+        <button class="btn-pixel">はい(Y)</button>
+        <button class="btn-pixel">いいえ(N)</button>
+      </div>
+    </div>
+  </div>
+<%- include('../../partials/footer') %>
